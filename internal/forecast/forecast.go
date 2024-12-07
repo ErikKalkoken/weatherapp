@@ -29,8 +29,8 @@ type ForecastDay struct {
 }
 
 // Get returns the current weather and weather forecasts for a location.
-func Get(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
-	response, err := fetchData(lat, lon)
+func Get(httpClient *http.Client, lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
+	response, err := fetchData(httpClient, lat, lon)
 	if err != nil {
 		return ForecastHour{}, nil, nil, err
 	}
@@ -60,14 +60,14 @@ func Get(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay,
 
 type forecastResponse struct {
 	Elevation            float64 `json:"elevation"`
+	Error                bool    `json:"error"`
 	GenerationTimeMS     float64 `json:"generationtime_ms"`
 	Latitude             float64 `json:"latitude"`
 	Longitude            float64 `json:"longitude"`
+	Reason               string  `json:"reason"`
 	Timezone             string  `json:"timezone"`
 	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
-	UtcOffsetSeconds     int     `json:"utc_offset_seconds"`
-	Error                bool    `json:"error"`
-	Reason               string  `json:"reason"`
+	UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
 
 	Current      map[string]any    `json:"current"`
 	CurrentUnits map[string]string `json:"current_units"`
@@ -77,7 +77,7 @@ type forecastResponse struct {
 	HourlyUnits  map[string]string `json:"hourly_units"`
 }
 
-func fetchData(lat float64, lon float64) (forecastResponse, error) {
+func fetchData(httpClient *http.Client, lat float64, lon float64) (forecastResponse, error) {
 	v := url.Values{}
 	v.Add("latitude", fmt.Sprint(lat))
 	v.Add("longitude", fmt.Sprint(lon))
@@ -87,7 +87,7 @@ func fetchData(lat float64, lon float64) (forecastResponse, error) {
 	v.Add("daily", "temperature_2m_max,temperature_2m_min,precipitation_probability_mean,weather_code")
 	v.Add("hourly", "temperature_2m,precipitation_probability,weather_code,is_day")
 	u := "https://api.open-meteo.com/v1/forecast/?" + v.Encode()
-	resp, err := http.Get(u)
+	resp, err := httpClient.Get(u)
 	if err != nil {
 		return forecastResponse{}, fmt.Errorf("making request to open meteo API: %w", err)
 	}

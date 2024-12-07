@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"net/http"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -17,20 +19,22 @@ const (
 
 type ui struct {
 	Content fyne.CanvasObject
-	window  fyne.Window
 
-	current *CurrentWeatherWidget
-	hours   []*HourForecastWidget
-	days    []*DayForecastWidget
+	httpClient *http.Client
+	window     fyne.Window
+	current    *CurrentWeatherWidget
+	hours      []*HourForecastWidget
+	days       []*DayForecastWidget
 }
 
-func New(w fyne.Window) *ui {
+func New(w fyne.Window, httpClient *http.Client) *ui {
 	loadWeatherIcons()
 	u := &ui{
-		window:  w,
-		current: NewCurrentWeatherWidget(),
-		hours:   make([]*HourForecastWidget, forecastedHours+1),
-		days:    make([]*DayForecastWidget, forecastedDays),
+		current:    NewCurrentWeatherWidget(),
+		days:       make([]*DayForecastWidget, forecastedDays),
+		hours:      make([]*HourForecastWidget, forecastedHours+1),
+		httpClient: httpClient,
+		window:     w,
 	}
 
 	hoursGrid := container.NewGridWithRows(1)
@@ -77,11 +81,11 @@ func makeTitle(s string) *fyne.Container {
 
 func (u *ui) Refresh() error {
 	var err error
-	loc, err := location.Get()
+	loc, err := location.Get(u.httpClient)
 	if err != nil {
 		return err
 	}
-	current, hours, days, err := forecast.Get(loc.Latitude, loc.Longitude)
+	current, hours, days, err := forecast.Get(u.httpClient, loc.Latitude, loc.Longitude)
 	if err != nil {
 		return err
 	}

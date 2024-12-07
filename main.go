@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -10,13 +11,17 @@ import (
 )
 
 const (
-	updateTicker = 60 * time.Second
+	updateTicker   = 60 * time.Second
+	requestTimeout = 30 * time.Second
 )
 
 func main() {
 	a := app.New()
 	w := a.NewWindow("Weather")
-	u := ui.New(w)
+	client := &http.Client{
+		Timeout: requestTimeout,
+	}
+	u := ui.New(w, client)
 	w.SetContent(u.Content)
 	w.Resize(fyne.NewSize(300, 600))
 	ticker := time.NewTicker(updateTicker)

@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+type Location struct {
+	City      string
+	Country   string
+	Latitude  float64
+	Longitude float64
+}
+
 type ipResponse struct {
 	City        string
 	Country     string
@@ -21,16 +28,9 @@ type ipResponse struct {
 	Zip         string
 }
 
-type Location struct {
-	City      string
-	Country   string
-	Latitude  float64
-	Longitude float64
-}
-
 // Get returns the location associated with the IP address of this machine.
-func Get() (loc Location, err error) {
-	resp, err := http.Get("http://ip-api.com/json/")
+func Get(client *http.Client) (loc Location, err error) {
+	resp, err := client.Get("http://ip-api.com/json/")
 	if err != nil {
 		return Location{}, fmt.Errorf("making request to IP API: %w", err)
 	}

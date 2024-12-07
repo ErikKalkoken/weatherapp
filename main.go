@@ -1,18 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"slices"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 type iconName uint
@@ -83,79 +76,19 @@ var weatherIcons map[iconName]fyne.Resource
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("Weather")
 	loadWeatherIcons()
-	location, err := getMyLocation()
-	if err != nil {
-		log.Fatal(err)
-	}
-	current, hourly, daily, err := getForecast(location.Latitude, location.Longitude)
-	if err != nil {
-		log.Fatal(err)
-	}
-	w.SetContent(makeContent(location, current, hourly, daily))
+	w := a.NewWindow("Weather")
+	u := newUI(w)
+	w.SetContent(u.content)
 	w.Resize(fyne.NewSize(300, 600))
+	ticker := time.NewTicker(60 * time.Second)
+	go func() {
+		for {
+			u.refresh()
+			<-ticker.C
+		}
+	}()
 	w.ShowAndRun()
-}
-
-func makeContent(location location, current forecastHour, hourly []forecastHour, daily []forecastDay) *fyne.Container {
-	top := makeTopBox(location, current)
-	hours := container.NewBorder(
-		makeTitle("Hourly Forecast"),
-		nil,
-		nil,
-		nil,
-		container.NewHScroll(makeHourGrid(current, hourly)),
-	)
-	days := container.NewBorder(
-		makeTitle("10-Day Forecast"),
-		nil,
-		nil,
-		nil,
-		container.NewVScroll(makeDayGrid(daily)),
-	)
-	c := container.NewBorder(
-		container.NewVBox(top, hours),
-		nil,
-		nil,
-		nil,
-		days,
-	)
-	return c
-}
-
-func makeTitle(s string) *fyne.Container {
-	return container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel(s))
-}
-
-func makeHourGrid(current forecastHour, hourly []forecastHour) *fyne.Container {
-	grid := container.NewGridWithRows(1)
-	for _, v := range slices.Concat([]forecastHour{current}, hourly) {
-		grid.Add(NewHourForecastWidget2(v))
-	}
-	return grid
-}
-
-func makeDayGrid(daily []forecastDay) *fyne.Container {
-	grid := container.NewGridWithColumns(1)
-	for _, v := range daily {
-		grid.Add(NewDayForecastWidget2(v))
-	}
-	return grid
-}
-
-func makeTopBox(location location, current forecastHour) *fyne.Container {
-	city := fmt.Sprintf("%s / %s", location.City, location.Country)
-	t := fmt.Sprintf("# %.0f°", current.temperature2m)
-	m := weatherCodeMappings[current.weatherCode]
-	x := cases.Title(language.English)
-	description := x.String(m.description)
-	c := container.NewVBox(
-		container.NewCenter(widget.NewLabel(city)),
-		container.NewCenter(widget.NewRichTextFromMarkdown(t)),
-		container.NewCenter(widget.NewLabel(description)),
-	)
-	return c
 }
 
 func loadWeatherIcons() {

@@ -17,12 +17,12 @@ type HourForecastWidget struct {
 }
 
 func NewHourForecastWidget() *HourForecastWidget {
-	p := widget.NewLabel("99")
+	p := widget.NewLabel("")
 	p.Importance = widget.HighImportance
 	w := &HourForecastWidget{
-		hour:          widget.NewLabel("99"),
-		symbol:        widget.NewIcon(weatherIcons[undefined]),
-		temperature:   widget.NewLabel("99"),
+		hour:          widget.NewLabel(""),
+		symbol:        widget.NewIcon(resourceBlankSvg),
+		temperature:   widget.NewLabel(""),
 		precipitation: p,
 	}
 	w.ExtendBaseWidget(w)

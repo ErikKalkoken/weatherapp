@@ -19,14 +19,14 @@ type DayForecastWidget struct {
 }
 
 func NewDayForecastWidget() *DayForecastWidget {
-	p := widget.NewLabel("99")
+	p := widget.NewLabel("")
 	p.Importance = widget.HighImportance
 	w := &DayForecastWidget{
-		day:            widget.NewLabel("99"),
+		day:            widget.NewLabel(""),
 		precipitation:  p,
-		symbol:         widget.NewIcon(weatherIcons[undefined]),
-		temperatureMax: widget.NewLabel("99"),
-		temperatureMin: widget.NewLabel("99"),
+		symbol:         widget.NewIcon(resourceBlankSvg),
+		temperatureMax: widget.NewLabel(""),
+		temperatureMin: widget.NewLabel(""),
 	}
 	w.ExtendBaseWidget(w)
 	return w

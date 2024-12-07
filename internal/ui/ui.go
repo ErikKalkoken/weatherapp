@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ErikKalkoken/weatherapp/internal/api"
 )
 
 const (
@@ -72,7 +73,7 @@ func New(w fyne.Window) *ui {
 
 func (u *ui) Refresh() {
 	var err error
-	loc, err := getMyLocation()
+	loc, err := api.GetMyLocation()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -86,13 +87,13 @@ func (u *ui) Refresh() {
 		if i+1 >= len(u.hours) {
 			break
 		}
-		u.hours[i+1].Set(f, iconFromCode(f.weatherCode, f.isDay))
+		u.hours[i+1].Set(f, iconFromCode(f.WeatherCode, f.IsDay))
 	}
 	for i, f := range days {
 		if i >= len(u.days) {
 			break
 		}
-		u.days[i].Set(f, iconFromCode(f.weatherCode, true))
+		u.days[i].Set(f, iconFromCode(f.WeatherCode, true))
 	}
 }
 

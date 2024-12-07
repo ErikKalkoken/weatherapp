@@ -1,4 +1,4 @@
-package ui
+package api
 
 import (
 	"encoding/json"
@@ -20,7 +20,7 @@ type ipResponse struct {
 	Zip         string
 }
 
-type location struct {
+type Location struct {
 	City      string
 	Country   string
 	Latitude  float64
@@ -28,25 +28,25 @@ type location struct {
 }
 
 // getMyLocation returns the current location from the IP address of this machine.
-func getMyLocation() (loc location, err error) {
+func GetMyLocation() (loc Location, err error) {
 	resp, err := http.Get("http://ip-api.com/json/")
 	if err != nil {
-		return location{}, fmt.Errorf("making request to IP API: %w", err)
+		return Location{}, fmt.Errorf("making request to IP API: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return location{}, fmt.Errorf("making request to IP API %s: %w", resp.Status, err)
+		return Location{}, fmt.Errorf("making request to IP API %s: %w", resp.Status, err)
 	}
 
 	var response ipResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return location{}, fmt.Errorf("decoding response: %w", err)
+		return Location{}, fmt.Errorf("decoding response: %w", err)
 	}
 	if response.Status == "fail" {
-		return location{}, fmt.Errorf(response.Message)
+		return Location{}, fmt.Errorf(response.Message)
 	}
-	l := location{
+	l := Location{
 		Latitude:  response.Lat,
 		Longitude: response.Lon,
 		City:      response.City,

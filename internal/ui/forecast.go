@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-type forecastHour struct {
-	time                     time.Time
-	temperature2m            float64
-	precipitationProbability int
-	weatherCode              int
-	isDay                    bool
-	isCurrent                bool
+type ForecastHour struct {
+	IsCurrent                bool
+	IsDay                    bool
+	PrecipitationProbability int
+	Temperature2m            float64
+	Time                     time.Time
+	WeatherCode              int
 }
 
-type forecastDay struct {
-	time                         time.Time
-	temperature2mMin             float64
-	temperature2mMax             float64
-	precipitationProbabilityMean int
-	weatherCode                  int
+type ForecastDay struct {
+	PrecipitationProbabilityMean int
+	Temperature2mMax             float64
+	Temperature2mMin             float64
+	Time                         time.Time
+	WeatherCode                  int
 }
 
 type forecastResponse struct {
@@ -45,22 +45,22 @@ type forecastResponse struct {
 }
 
 // getMyLocation returns the current location from the IP address of this machine.
-func getForecast(lat float64, lon float64) (forecastHour, []forecastHour, []forecastDay, error) {
+func getForecast(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
 	response, err := fetchData(lat, lon)
 	if err != nil {
-		return forecastHour{}, nil, nil, err
+		return ForecastHour{}, nil, nil, err
 	}
 	current, err := parseCurrent(response)
 	if err != nil {
-		return forecastHour{}, nil, nil, err
+		return ForecastHour{}, nil, nil, err
 	}
 	vv, err := parseHourly(response)
 	if err != nil {
-		return forecastHour{}, nil, nil, err
+		return ForecastHour{}, nil, nil, err
 	}
-	hourly := make([]forecastHour, 0)
+	hourly := make([]ForecastHour, 0)
 	for _, v := range vv {
-		if v.time.After(time.Now().UTC().Truncate(time.Hour).Add(time.Hour)) {
+		if v.Time.After(time.Now().UTC().Truncate(time.Hour).Add(time.Hour)) {
 			hourly = append(hourly, v)
 		}
 		if len(hourly) == 24 {
@@ -69,7 +69,7 @@ func getForecast(lat float64, lon float64) (forecastHour, []forecastHour, []fore
 	}
 	daily, err := parseDaily(response)
 	if err != nil {
-		return forecastHour{}, nil, nil, err
+		return ForecastHour{}, nil, nil, err
 	}
 	return current, hourly, daily, nil
 }
@@ -101,112 +101,112 @@ func fetchData(lat float64, lon float64) (forecastResponse, error) {
 	return response, nil
 }
 
-func parseCurrent(response forecastResponse) (forecastHour, error) {
-	c := forecastHour{isCurrent: true}
+func parseCurrent(response forecastResponse) (ForecastHour, error) {
+	c := ForecastHour{IsCurrent: true}
 	x, err := time.Parse("2006-01-02T15:04", response.Current["time"].(string))
 	if err != nil {
 		return c, err
 	}
-	c.time = x.UTC()
+	c.Time = x.UTC()
 	v1, ok := response.Current["temperature_2m"]
 	if !ok {
 		return c, fmt.Errorf("missing data")
 	}
-	c.temperature2m = v1.(float64)
+	c.Temperature2m = v1.(float64)
 	v2, ok := response.Current["precipitation_probability"]
 	if !ok {
 		return c, fmt.Errorf("missing data")
 	}
-	c.precipitationProbability = int(v2.(float64))
+	c.PrecipitationProbability = int(v2.(float64))
 	v3, ok := response.Current["weather_code"]
 	if !ok {
 		return c, fmt.Errorf("missing data")
 	}
-	c.weatherCode = int(v3.(float64))
+	c.WeatherCode = int(v3.(float64))
 	v4, ok := response.Current["is_day"]
 	if !ok {
 		return c, fmt.Errorf("missing data")
 	}
-	c.isDay = v4.(float64) == 1.0
+	c.IsDay = v4.(float64) == 1.0
 	return c, nil
 }
 
-func parseHourly(response forecastResponse) ([]forecastHour, error) {
-	hourly := make([]forecastHour, len(response.Hourly["time"]))
+func parseHourly(response forecastResponse) ([]ForecastHour, error) {
+	hourly := make([]ForecastHour, len(response.Hourly["time"]))
 	for i, v := range response.Hourly["time"] {
 		x, err := time.Parse("2006-01-02T15:04", v.(string))
 		if err != nil {
 			return nil, err
 		}
-		hourly[i].time = x.UTC()
+		hourly[i].Time = x.UTC()
 	}
 	vv1, ok := response.Hourly["temperature_2m"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv1 {
-		hourly[i].temperature2m = v.(float64)
+		hourly[i].Temperature2m = v.(float64)
 	}
 	vv2, ok := response.Hourly["precipitation_probability"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv2 {
-		hourly[i].precipitationProbability = int(v.(float64))
+		hourly[i].PrecipitationProbability = int(v.(float64))
 	}
 	vv3, ok := response.Hourly["weather_code"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv3 {
-		hourly[i].weatherCode = int(v.(float64))
+		hourly[i].WeatherCode = int(v.(float64))
 	}
 	vv4, ok := response.Hourly["is_day"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv4 {
-		hourly[i].isDay = v.(float64) == 1.0
+		hourly[i].IsDay = v.(float64) == 1.0
 	}
 	return hourly, nil
 }
 
-func parseDaily(response forecastResponse) ([]forecastDay, error) {
-	daily := make([]forecastDay, len(response.Daily["time"]))
+func parseDaily(response forecastResponse) ([]ForecastDay, error) {
+	daily := make([]ForecastDay, len(response.Daily["time"]))
 	for i, v := range response.Daily["time"] {
 		x, err := time.Parse("2006-01-02", v.(string))
 		if err != nil {
 			return nil, err
 		}
-		daily[i].time = x.UTC()
+		daily[i].Time = x.UTC()
 	}
 	vv1, ok := response.Daily["temperature_2m_min"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv1 {
-		daily[i].temperature2mMin = v.(float64)
+		daily[i].Temperature2mMin = v.(float64)
 	}
 	vv2, ok := response.Daily["temperature_2m_max"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv2 {
-		daily[i].temperature2mMax = v.(float64)
+		daily[i].Temperature2mMax = v.(float64)
 	}
 	vv3, ok := response.Daily["precipitation_probability_mean"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv3 {
-		daily[i].precipitationProbabilityMean = int(v.(float64))
+		daily[i].PrecipitationProbabilityMean = int(v.(float64))
 	}
 	vv4, ok := response.Daily["weather_code"]
 	if !ok {
 		return nil, fmt.Errorf("missing data")
 	}
 	for i, v := range vv4 {
-		daily[i].weatherCode = int(v.(float64))
+		daily[i].WeatherCode = int(v.(float64))
 	}
 	return daily, nil
 }

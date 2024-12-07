@@ -29,16 +29,16 @@ func NewHourForecastWidget() *HourForecastWidget {
 	return w
 }
 
-func (w *HourForecastWidget) Set(f forecastHour, icon fyne.Resource) {
+func (w *HourForecastWidget) Set(f ForecastHour, icon fyne.Resource) {
 	var text string
-	if f.isCurrent {
+	if f.IsCurrent {
 		text = "Now"
 	} else {
-		text = fmt.Sprintf("%02d", f.time.Hour())
+		text = fmt.Sprintf("%02d", f.Time.Hour())
 	}
 	w.hour.SetText(text)
-	w.temperature.SetText(fmt.Sprintf("%.0f°", f.temperature2m))
-	w.precipitation.SetText(fmt.Sprintf("%d%%", f.precipitationProbability))
+	w.temperature.SetText(fmt.Sprintf("%.0f°", f.Temperature2m))
+	w.precipitation.SetText(fmt.Sprintf("%d%%", f.PrecipitationProbability))
 	w.symbol.SetResource(icon)
 }
 

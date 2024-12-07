@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ErikKalkoken/weatherapp/internal/api"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -27,18 +28,18 @@ func NewCurrentWeatherWidget() *CurrentWeatherWidget {
 	return w
 }
 
-func NewCurrentWeatherWidget2(location location, current forecastHour) *CurrentWeatherWidget {
+func NewCurrentWeatherWidget2(location api.Location, current ForecastHour) *CurrentWeatherWidget {
 	w := NewCurrentWeatherWidget()
 	w.Set(location, current)
 	return w
 }
 
-func (w *CurrentWeatherWidget) Set(l location, c forecastHour) {
+func (w *CurrentWeatherWidget) Set(l api.Location, c ForecastHour) {
 	city := fmt.Sprintf("%s / %s", l.City, l.Country)
 	w.city.SetText(city)
-	t := fmt.Sprintf("# %.0f°", c.temperature2m)
+	t := fmt.Sprintf("# %.0f°", c.Temperature2m)
 	w.temperature.ParseMarkdown(t)
-	m := weatherCodeMappings[c.weatherCode]
+	m := weatherCodeMappings[c.WeatherCode]
 	x := cases.Title(language.English)
 	description := x.String(m.description)
 	w.description.SetText(description)

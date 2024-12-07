@@ -32,17 +32,17 @@ func NewDayForecastWidget() *DayForecastWidget {
 	return w
 }
 
-func (w *DayForecastWidget) Set(f forecastDay, icon fyne.Resource) {
+func (w *DayForecastWidget) Set(f ForecastDay, icon fyne.Resource) {
 	var text string
-	if f.time.Day() == time.Now().UTC().Day() {
+	if f.Time.Day() == time.Now().UTC().Day() {
 		text = "Today"
 	} else {
-		text = f.time.Weekday().String()
+		text = f.Time.Weekday().String()
 	}
 	w.day.SetText(text)
-	w.temperatureMin.SetText(fmt.Sprintf("%.0f°", f.temperature2mMin))
-	w.temperatureMax.SetText(fmt.Sprintf("%.0f°", f.temperature2mMax))
-	w.precipitation.SetText(fmt.Sprintf("%d%%", f.precipitationProbabilityMean))
+	w.temperatureMin.SetText(fmt.Sprintf("%.0f°", f.Temperature2mMin))
+	w.temperatureMax.SetText(fmt.Sprintf("%.0f°", f.Temperature2mMax))
+	w.precipitation.SetText(fmt.Sprintf("%d%%", f.PrecipitationProbabilityMean))
 	w.symbol.SetResource(icon)
 }
 

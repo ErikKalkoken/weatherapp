@@ -7,6 +7,9 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	"github.com/ErikKalkoken/fyne-kx/layout"
+
 	"github.com/ErikKalkoken/weatherapp/internal/forecast"
 )
 
@@ -48,8 +51,9 @@ func (w *DayForecastWidget) Set(f forecast.ForecastDay, icon fyne.Resource) {
 }
 
 func (w *DayForecastWidget) CreateRenderer() fyne.WidgetRenderer {
-	c := container.NewGridWithColumns(
-		5,
+	l := layout.NewColumns(100, 50, 50, 50, 50)
+	c := container.New(
+		l,
 		w.day,
 		container.NewCenter(w.symbol),
 		container.NewCenter(w.precipitation),

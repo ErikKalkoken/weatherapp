@@ -4,6 +4,7 @@ go 1.23.3
 
 require (
 	fyne.io/fyne/v2 v2.5.2
+	github.com/ErikKalkoken/fyne-kx v0.2.0
 	golang.org/x/text v0.16.0
 )
 

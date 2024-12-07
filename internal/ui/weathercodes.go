@@ -97,3 +97,18 @@ func LoadWeatherIcons() {
 		undefined:         theme.QuestionIcon(),
 	}
 }
+
+func iconFromCode(code int, isDay bool) fyne.Resource {
+	m := weatherCodeMappings[code]
+	var short iconName
+	if !isDay && m.iconNight != undefined {
+		short = m.iconNight
+	} else {
+		short = m.icon
+	}
+	r, ok := weatherIcons[short]
+	if !ok {
+		r = weatherIcons[undefined]
+	}
+	return r
+}

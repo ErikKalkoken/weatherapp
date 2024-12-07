@@ -32,13 +32,7 @@ func NewDayForecastWidget() *DayForecastWidget {
 	return w
 }
 
-func NewDayForecastWidget2(f forecastDay) *DayForecastWidget {
-	w := NewDayForecastWidget()
-	w.Set(f)
-	return w
-}
-
-func (w *DayForecastWidget) Set(f forecastDay) {
+func (w *DayForecastWidget) Set(f forecastDay, icon fyne.Resource) {
 	var text string
 	if f.time.Day() == time.Now().UTC().Day() {
 		text = "Today"
@@ -49,12 +43,7 @@ func (w *DayForecastWidget) Set(f forecastDay) {
 	w.temperatureMin.SetText(fmt.Sprintf("%.0f°", f.temperature2mMin))
 	w.temperatureMax.SetText(fmt.Sprintf("%.0f°", f.temperature2mMax))
 	w.precipitation.SetText(fmt.Sprintf("%d%%", f.precipitationProbabilityMean))
-	m := weatherCodeMappings[f.weatherCode]
-	r, ok := weatherIcons[m.icon]
-	if !ok {
-		r = weatherIcons[undefined]
-	}
-	w.symbol.SetResource(r)
+	w.symbol.SetResource(icon)
 }
 
 func (w *DayForecastWidget) CreateRenderer() fyne.WidgetRenderer {

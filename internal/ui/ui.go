@@ -81,18 +81,18 @@ func (u *ui) Refresh() {
 		log.Fatal(err)
 	}
 	u.current.Set(loc, current)
-	u.hours[0].Set(current)
+	u.hours[0].Set(current, resourceBlankSvg)
 	for i, f := range hours {
 		if i+1 >= len(u.hours) {
 			break
 		}
-		u.hours[i+1].Set(f)
+		u.hours[i+1].Set(f, iconFromCode(f.weatherCode, f.isDay))
 	}
 	for i, f := range days {
 		if i >= len(u.days) {
 			break
 		}
-		u.days[i].Set(f)
+		u.days[i].Set(f, iconFromCode(f.weatherCode, true))
 	}
 }
 

@@ -24,7 +24,7 @@ func NewDayForecastWidget() *DayForecastWidget {
 	w := &DayForecastWidget{
 		day:            widget.NewLabel("99"),
 		precipitation:  p,
-		symbol:         widget.NewIcon(weatherSymbols[undefined]),
+		symbol:         widget.NewIcon(weatherIcons[undefined]),
 		temperatureMax: widget.NewLabel("99"),
 		temperatureMin: widget.NewLabel("99"),
 	}
@@ -50,9 +50,9 @@ func (w *DayForecastWidget) Set(f forecastDay) {
 	w.temperatureMax.SetText(fmt.Sprintf("%.0f°", f.temperature2mMax))
 	w.precipitation.SetText(fmt.Sprintf("%d%%", f.precipitationProbabilityMean))
 	m := weatherCodeMappings[f.weatherCode]
-	r, ok := weatherSymbols[m.short]
+	r, ok := weatherIcons[m.icon]
 	if !ok {
-		r = weatherSymbols[undefined]
+		r = weatherIcons[undefined]
 	}
 	w.symbol.SetResource(r)
 }

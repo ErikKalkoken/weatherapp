@@ -21,7 +21,7 @@ func NewHourForecastWidget() *HourForecastWidget {
 	p.Importance = widget.HighImportance
 	w := &HourForecastWidget{
 		hour:          widget.NewLabel("99"),
-		symbol:        widget.NewIcon(weatherSymbols[undefined]),
+		symbol:        widget.NewIcon(weatherIcons[undefined]),
 		temperature:   widget.NewLabel("99"),
 		precipitation: p,
 	}
@@ -46,15 +46,15 @@ func (w *HourForecastWidget) Set(f forecastHour) {
 	w.temperature.SetText(fmt.Sprintf("%.0f°", f.temperature2m))
 	w.precipitation.SetText(fmt.Sprintf("%d%%", f.precipitationProbability))
 	m := weatherCodeMappings[f.weatherCode]
-	var short weatherShort
-	if !f.isDay && m.shortNight != undefined {
-		short = m.shortNight
+	var short iconName
+	if !f.isDay && m.iconNight != undefined {
+		short = m.iconNight
 	} else {
-		short = m.short
+		short = m.icon
 	}
-	r, ok := weatherSymbols[short]
+	r, ok := weatherIcons[short]
 	if !ok {
-		r = weatherSymbols[undefined]
+		r = weatherIcons[undefined]
 	}
 	w.symbol.SetResource(r)
 }

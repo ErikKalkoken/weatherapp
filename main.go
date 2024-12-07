@@ -15,10 +15,10 @@ import (
 	"golang.org/x/text/language"
 )
 
-type weatherShort uint
+type iconName uint
 
 const (
-	undefined weatherShort = iota
+	undefined iconName = iota
 	cloudy
 	dust
 	fog
@@ -44,8 +44,8 @@ const (
 
 type weatherCodeMapping struct {
 	description string
-	short       weatherShort
-	shortNight  weatherShort // alternate to be used at night (when defined)
+	icon        iconName
+	iconNight   iconName // alternate to be used at night (when defined)
 }
 
 var weatherCodeMappings = map[int]weatherCodeMapping{
@@ -79,12 +79,12 @@ var weatherCodeMappings = map[int]weatherCodeMapping{
 	99: {"thunderstorms with heavy hail", hail, undefined},
 }
 
-var weatherSymbols map[weatherShort]fyne.Resource
+var weatherIcons map[iconName]fyne.Resource
 
 func main() {
 	a := app.New()
 	w := a.NewWindow("Weather")
-	loadWeatherSymbols()
+	loadWeatherIcons()
 	location, err := getMyLocation()
 	if err != nil {
 		log.Fatal(err)
@@ -101,14 +101,14 @@ func main() {
 func makeContent(location location, current forecastHour, hourly []forecastHour, daily []forecastDay) *fyne.Container {
 	top := makeTopBox(location, current)
 	hours := container.NewBorder(
-		container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel("Hourly Forecast")),
+		makeTitle("Hourly Forecast"),
 		nil,
 		nil,
 		nil,
 		container.NewHScroll(makeHourGrid(current, hourly)),
 	)
 	days := container.NewBorder(
-		container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel("10-Day Forecast")),
+		makeTitle("10-Day Forecast"),
 		nil,
 		nil,
 		nil,
@@ -122,6 +122,10 @@ func makeContent(location location, current forecastHour, hourly []forecastHour,
 		days,
 	)
 	return c
+}
+
+func makeTitle(s string) *fyne.Container {
+	return container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel(s))
 }
 
 func makeHourGrid(current forecastHour, hourly []forecastHour) *fyne.Container {
@@ -154,8 +158,8 @@ func makeTopBox(location location, current forecastHour) *fyne.Container {
 	return c
 }
 
-func loadWeatherSymbols() {
-	weatherSymbols = map[weatherShort]fyne.Resource{
+func loadWeatherIcons() {
+	weatherIcons = map[iconName]fyne.Resource{
 		cloudy:            theme.NewThemedResource(resourceWeatherCloudySvg),
 		dust:              theme.NewThemedResource(resourceWeatherDustSvg),
 		fog:               theme.NewThemedResource(resourceWeatherFogSvg),

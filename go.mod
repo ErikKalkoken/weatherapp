@@ -1,4 +1,4 @@
-module example/weatherapp
+module github.com/ErikKalkoken/weatherapp
 
 go 1.23.3
 

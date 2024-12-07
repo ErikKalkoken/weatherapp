@@ -1,4 +1,4 @@
-package main
+package ui
 
 import (
 	"log"
@@ -16,7 +16,7 @@ const (
 )
 
 type ui struct {
-	content fyne.CanvasObject
+	Content fyne.CanvasObject
 	window  fyne.Window
 
 	current *CurrentWeatherWidget
@@ -24,7 +24,7 @@ type ui struct {
 	days    []*DayForecastWidget
 }
 
-func newUI(w fyne.Window) *ui {
+func New(w fyne.Window) *ui {
 	u := &ui{
 		window:  w,
 		current: NewCurrentWeatherWidget(),
@@ -66,11 +66,11 @@ func newUI(w fyne.Window) *ui {
 		nil,
 		daysBox,
 	)
-	u.content = c
+	u.Content = c
 	return u
 }
 
-func (u *ui) refresh() {
+func (u *ui) Refresh() {
 	var err error
 	loc, err := getMyLocation()
 	if err != nil {

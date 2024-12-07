@@ -1,4 +1,5 @@
-package api
+// Package location allows to determine the current location of a machine.
+package location
 
 import (
 	"encoding/json"
@@ -27,8 +28,8 @@ type Location struct {
 	Longitude float64
 }
 
-// getMyLocation returns the current location from the IP address of this machine.
-func GetMyLocation() (loc Location, err error) {
+// Query returns the current location from the IP address of this machine.
+func Query() (loc Location, err error) {
 	resp, err := http.Get("http://ip-api.com/json/")
 	if err != nil {
 		return Location{}, fmt.Errorf("making request to IP API: %w", err)

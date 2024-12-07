@@ -71,7 +71,7 @@ var weatherCodeMappings = map[int]weatherCodeMapping{
 
 var weatherIcons map[iconName]fyne.Resource
 
-func LoadWeatherIcons() {
+func loadWeatherIcons() {
 	weatherIcons = map[iconName]fyne.Resource{
 		cloudy:            theme.NewThemedResource(resourceWeatherCloudySvg),
 		dust:              theme.NewThemedResource(resourceWeatherDustSvg),

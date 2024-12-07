@@ -1,14 +1,13 @@
 package ui
 
 import (
-	"log"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ErikKalkoken/weatherapp/internal/api"
+	"github.com/ErikKalkoken/weatherapp/internal/location"
+	"github.com/ErikKalkoken/weatherapp/internal/openmeteo"
 )
 
 const (
@@ -26,6 +25,7 @@ type ui struct {
 }
 
 func New(w fyne.Window) *ui {
+	loadWeatherIcons()
 	u := &ui{
 		window:  w,
 		current: NewCurrentWeatherWidget(),
@@ -71,18 +71,22 @@ func New(w fyne.Window) *ui {
 	return u
 }
 
-func (u *ui) Refresh() {
+func makeTitle(s string) *fyne.Container {
+	return container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel(s))
+}
+
+func (u *ui) Refresh() error {
 	var err error
-	loc, err := api.GetMyLocation()
+	loc, err := location.Query()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	current, hours, days, err := getForecast(loc.Latitude, loc.Longitude)
+	current, hours, days, err := openmeteo.GetForecast(loc.Latitude, loc.Longitude)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	u.current.Set(loc, current)
-	u.hours[0].Set(current, resourceBlankSvg)
+	u.hours[0].Set(current, iconFromCode(current.WeatherCode, current.IsDay))
 	for i, f := range hours {
 		if i+1 >= len(u.hours) {
 			break
@@ -95,8 +99,5 @@ func (u *ui) Refresh() {
 		}
 		u.days[i].Set(f, iconFromCode(f.WeatherCode, true))
 	}
-}
-
-func makeTitle(s string) *fyne.Container {
-	return container.NewStack(canvas.NewRectangle(theme.Color(theme.ColorNameButton)), widget.NewLabel(s))
+	return nil
 }

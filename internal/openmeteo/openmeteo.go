@@ -1,4 +1,5 @@
-package ui
+// Package openmeto provides access to the open meteo API.
+package openmeteo
 
 import (
 	"encoding/json"
@@ -25,27 +26,8 @@ type ForecastDay struct {
 	WeatherCode                  int
 }
 
-type forecastResponse struct {
-	Elevation            float64 `json:"elevation"`
-	GenerationTimeMS     float64 `json:"generationtime_ms"`
-	Latitude             float64 `json:"latitude"`
-	Longitude            float64 `json:"longitude"`
-	Timezone             string  `json:"timezone"`
-	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
-	UtcOffsetSeconds     int     `json:"utc_offset_seconds"`
-	Error                bool    `json:"error"`
-	Reason               string  `json:"reason"`
-
-	Current      map[string]any    `json:"current"`
-	CurrentUnits map[string]string `json:"current_units"`
-	Daily        map[string][]any  `json:"daily"`
-	DailyUnits   map[string]string `json:"daily_units"`
-	Hourly       map[string][]any  `json:"hourly"`
-	HourlyUnits  map[string]string `json:"hourly_units"`
-}
-
 // getMyLocation returns the current location from the IP address of this machine.
-func getForecast(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
+func GetForecast(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
 	response, err := fetchData(lat, lon)
 	if err != nil {
 		return ForecastHour{}, nil, nil, err
@@ -72,6 +54,25 @@ func getForecast(lat float64, lon float64) (ForecastHour, []ForecastHour, []Fore
 		return ForecastHour{}, nil, nil, err
 	}
 	return current, hourly, daily, nil
+}
+
+type forecastResponse struct {
+	Elevation            float64 `json:"elevation"`
+	GenerationTimeMS     float64 `json:"generationtime_ms"`
+	Latitude             float64 `json:"latitude"`
+	Longitude            float64 `json:"longitude"`
+	Timezone             string  `json:"timezone"`
+	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
+	UtcOffsetSeconds     int     `json:"utc_offset_seconds"`
+	Error                bool    `json:"error"`
+	Reason               string  `json:"reason"`
+
+	Current      map[string]any    `json:"current"`
+	CurrentUnits map[string]string `json:"current_units"`
+	Daily        map[string][]any  `json:"daily"`
+	DailyUnits   map[string]string `json:"daily_units"`
+	Hourly       map[string][]any  `json:"hourly"`
+	HourlyUnits  map[string]string `json:"hourly_units"`
 }
 
 func fetchData(lat float64, lon float64) (forecastResponse, error) {

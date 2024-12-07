@@ -1,2 +1,2 @@
 bundle:
-	fyne bundle  resources > resource.go
+	fyne bundle --package ui  resources > internal/ui/resource.go

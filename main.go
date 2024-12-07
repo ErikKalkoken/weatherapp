@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -8,17 +9,22 @@ import (
 	"github.com/ErikKalkoken/weatherapp/internal/ui"
 )
 
+const (
+	updateTicker = 60 * time.Second
+)
+
 func main() {
 	a := app.New()
-	ui.LoadWeatherIcons()
 	w := a.NewWindow("Weather")
 	u := ui.New(w)
 	w.SetContent(u.Content)
 	w.Resize(fyne.NewSize(300, 600))
-	ticker := time.NewTicker(60 * time.Second)
+	ticker := time.NewTicker(updateTicker)
 	go func() {
 		for {
-			u.Refresh()
+			if err := u.Refresh(); err != nil {
+				log.Println("ERROR: ", err)
+			}
 			<-ticker.C
 		}
 	}()

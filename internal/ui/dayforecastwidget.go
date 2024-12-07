@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ErikKalkoken/weatherapp/internal/openmeteo"
 )
 
 type DayForecastWidget struct {
@@ -32,7 +33,7 @@ func NewDayForecastWidget() *DayForecastWidget {
 	return w
 }
 
-func (w *DayForecastWidget) Set(f ForecastDay, icon fyne.Resource) {
+func (w *DayForecastWidget) Set(f openmeteo.ForecastDay, icon fyne.Resource) {
 	var text string
 	if f.Time.Day() == time.Now().UTC().Day() {
 		text = "Today"

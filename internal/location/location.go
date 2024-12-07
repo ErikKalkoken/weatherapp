@@ -28,8 +28,8 @@ type Location struct {
 	Longitude float64
 }
 
-// Query returns the current location from the IP address of this machine.
-func Query() (loc Location, err error) {
+// Get returns the location associated with the IP address of this machine.
+func Get() (loc Location, err error) {
 	resp, err := http.Get("http://ip-api.com/json/")
 	if err != nil {
 		return Location{}, fmt.Errorf("making request to IP API: %w", err)

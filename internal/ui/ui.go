@@ -6,8 +6,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ErikKalkoken/weatherapp/internal/forecast"
 	"github.com/ErikKalkoken/weatherapp/internal/location"
-	"github.com/ErikKalkoken/weatherapp/internal/openmeteo"
 )
 
 const (
@@ -77,11 +77,11 @@ func makeTitle(s string) *fyne.Container {
 
 func (u *ui) Refresh() error {
 	var err error
-	loc, err := location.Query()
+	loc, err := location.Get()
 	if err != nil {
 		return err
 	}
-	current, hours, days, err := openmeteo.GetForecast(loc.Latitude, loc.Longitude)
+	current, hours, days, err := forecast.Get(loc.Latitude, loc.Longitude)
 	if err != nil {
 		return err
 	}

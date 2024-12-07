@@ -1,5 +1,5 @@
-// Package openmeto provides access to the open meteo API.
-package openmeteo
+// Package forecast provides current weather forecasts.
+package forecast
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Weather forecast for an hour or current weather.
 type ForecastHour struct {
 	IsCurrent                bool
 	IsDay                    bool
@@ -18,6 +19,7 @@ type ForecastHour struct {
 	WeatherCode              int
 }
 
+// Weather forecast for a day.
 type ForecastDay struct {
 	PrecipitationProbabilityMean int
 	Temperature2mMax             float64
@@ -26,8 +28,8 @@ type ForecastDay struct {
 	WeatherCode                  int
 }
 
-// getMyLocation returns the current location from the IP address of this machine.
-func GetForecast(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
+// Get returns the current weather and weather forecasts for a location.
+func Get(lat float64, lon float64) (ForecastHour, []ForecastHour, []ForecastDay, error) {
 	response, err := fetchData(lat, lon)
 	if err != nil {
 		return ForecastHour{}, nil, nil, err

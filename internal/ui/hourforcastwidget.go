@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ErikKalkoken/weatherapp/internal/openmeteo"
+	"github.com/ErikKalkoken/weatherapp/internal/forecast"
 )
 
 type HourForecastWidget struct {
@@ -30,7 +30,7 @@ func NewHourForecastWidget() *HourForecastWidget {
 	return w
 }
 
-func (w *HourForecastWidget) Set(f openmeteo.ForecastHour, icon fyne.Resource) {
+func (w *HourForecastWidget) Set(f forecast.ForecastHour, icon fyne.Resource) {
 	var text string
 	if f.IsCurrent {
 		text = "Now"
